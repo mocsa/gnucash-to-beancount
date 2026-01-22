@@ -245,7 +245,7 @@ class GnuCash2Beancount:
         capitalized = [p[:1].upper() + p[1:] if p else "" for p in components]
         account_name = ":".join(capitalized)
 
-        return account_name.title()
+        return account_name
 
     def _sanitize_description(self, description) -> str:
         """Removes unwanted characters from a transaction narration"""
