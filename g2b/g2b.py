@@ -236,12 +236,16 @@ class GnuCash2Beancount:
     def _apply_renaming_patterns(self, account_name):
         """
         Renames an account such that it complies with the required beancount format.
-        The naming is also being capitalized here such that always only the first latter is written
-        in capitals.
+        It also makes sure that the first letter of every component is capitalized.
         """
         for pattern, replacement in self._account_rename_patterns:
             account_name = re.sub(pattern, repl=replacement, string=account_name)
-        return account_name.title()
+
+        components = account_name.split(":")
+        capitalized = [p[:1].upper() + p[1:] if p else "" for p in components]
+        account_name = ":".join(capitalized)
+
+        return account_name
 
     def _sanitize_description(self, description) -> str:
         """Removes unwanted characters from a transaction narration"""

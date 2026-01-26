@@ -139,7 +139,7 @@ class TestGnuCash2Beancount:
         with open(output_path, "r", encoding="utf8") as beanfile:
             content = beanfile.read()
         example_transaction = """2024-05-06 ! "Transfer"
-  ! Assets:Current-Assets:Checkingaccount-Foo-Bank   1000.0 EUR
+  ! Assets:Current-Assets:CheckingAccount-Foo-Bank   1000.0 EUR
   ! Assets:Current-Assets:Checking-Account          -1000.0 EUR
 """
         assert example_transaction in content
@@ -168,21 +168,21 @@ class TestGnuCash2Beancount:
             data.Open(
                 meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
                 date=datetime.datetime(2024, 5, 3).date(),
-                account="Expenses:Mygroceries",
+                account="Expenses:MyGroceries",
                 currencies=["EUR"],
                 booking=None,
             ),
             data.Open(
                 meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
                 date=datetime.datetime(2024, 5, 6).date(),
-                account="Assets:Current-Assets:Checkingaccount-Foo-Bank",
+                account="Assets:Current-Assets:CheckingAccount-Foo-Bank",
                 currencies=["EUR"],
                 booking=None,
             ),
             data.Open(
                 meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
                 date=datetime.datetime(2024, 5, 9).date(),
-                account="Assets:Current-Assets:Wallet-Nzd",
+                account="Assets:Current-Assets:Wallet-NZD",
                 currencies=["NZD"],
                 booking=None,
             ),
@@ -233,7 +233,7 @@ class TestGnuCash2Beancount:
                 links=set(),
                 postings=[
                     data.Posting(
-                        account="Expenses:Mygroceries",
+                        account="Expenses:MyGroceries",
                         units=amount.Amount(D("120.0"), currency="EUR"),
                         cost=None,
                         price=None,
@@ -260,7 +260,7 @@ class TestGnuCash2Beancount:
                 links=set(),
                 postings=[
                     data.Posting(
-                        account="Assets:Current-Assets:Checkingaccount-Foo-Bank",
+                        account="Assets:Current-Assets:CheckingAccount-Foo-Bank",
                         units=amount.Amount(D("1000.0"), currency="EUR"),
                         cost=None,
                         price=None,
@@ -287,7 +287,7 @@ class TestGnuCash2Beancount:
                 links=set(),
                 postings=[
                     data.Posting(
-                        account="Assets:Current-Assets:Wallet-Nzd",
+                        account="Assets:Current-Assets:Wallet-NZD",
                         units=amount.Amount(D("50.0"), currency="NZD"),
                         cost=None,
                         price=None,
