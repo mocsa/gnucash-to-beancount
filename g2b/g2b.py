@@ -244,15 +244,15 @@ class GnuCash2Beancount:
         """ Replace any remaining invalid characters with dashes.
         Beancount only accepts letters (any capitalization), numbers and dashes. """
         result = []
-        last_replaced_char = ''
+        last_replaced_char = ""
         for c in account_name:
-            if c.isalpha() or c.isdigit() or (c == '-' and last_replaced_char != '-') or c == ':':
+            if c.isalpha() or c.isdigit() or (c == "-" and last_replaced_char != "-") or c == ":":
                 result.append(c)
                 last_replaced_char = c
             else:
-                if last_replaced_char != '-':
-                    result.append('-')
-                    last_replaced_char = '-'
+                if last_replaced_char != "-":
+                    result.append("-")
+                    last_replaced_char = "-"
         account_name = ''.join(result)
 
         components = account_name.split(":")
