@@ -253,7 +253,7 @@ class GnuCash2Beancount:
                 if last_replaced_char != "-":
                     result.append("-")
                     last_replaced_char = "-"
-        account_name = ''.join(result)
+        account_name = "".join(result)
 
         components = account_name.split(":")
         capitalized = [p[:1].upper() + p[1:] if p else "" for p in components]
