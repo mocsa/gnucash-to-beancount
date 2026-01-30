@@ -241,6 +241,20 @@ class GnuCash2Beancount:
         for pattern, replacement in self._account_rename_patterns:
             account_name = re.sub(pattern, repl=replacement, string=account_name)
 
+        """ Replace any remaining invalid characters with dashes.
+        Beancount only accepts letters (any capitalization), numbers and dashes. """
+        result = []
+        last_replaced_char = ''
+        for c in account_name:
+            if c.isalpha() or c.isdigit() or (c == '-' and last_replaced_char != '-') or c == ':':
+                result.append(c)
+                last_replaced_char = c
+            else:
+                if last_replaced_char != '-':
+                    result.append('-')
+                    last_replaced_char = '-'
+        account_name = ''.join(result)
+
         components = account_name.split(":")
         capitalized = [p[:1].upper() + p[1:] if p else "" for p in components]
         account_name = ":".join(capitalized)

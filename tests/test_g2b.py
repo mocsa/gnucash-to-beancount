@@ -186,6 +186,20 @@ class TestGnuCash2Beancount:
                 currencies=["NZD"],
                 booking=None,
             ),
+            data.Open(
+                meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
+                date=datetime.datetime(2024, 5, 9).date(),
+                account="Assets:Current-Assets:Cash-in-Wallet",
+                currencies=["EUR"],
+                booking=None,
+            ),
+            data.Open(
+                meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
+                date=datetime.datetime(2024, 5, 9).date(),
+                account="Income:Bonus-Other",
+                currencies=["EUR"],
+                booking=None,
+            ),
         ]
         assert open_directives == expected_account_openings
 
@@ -305,6 +319,33 @@ class TestGnuCash2Beancount:
                             D("1.788908765652951699463327370"),
                             currency="NZD",
                         ),
+                        flag="!",
+                        meta=None,
+                    ),
+                ],
+            ),
+            data.Transaction(
+                meta={"filename": PosixPath(self.gnucash_path), "lineno": -1},
+                date=datetime.datetime(2024, 5, 9).date(),
+                flag="!",
+                payee="",
+                narration="Other income",
+                tags=frozenset(),
+                links=set(),
+                postings=[
+                    data.Posting(
+                        account="Assets:Current-Assets:Cash-in-Wallet",
+                        units=amount.Amount(D("200.0"), currency="EUR"),
+                        cost=None,
+                        price=None,
+                        flag="!",
+                        meta=None,
+                    ),
+                    data.Posting(
+                        account="Income:Bonus-Other",
+                        units=amount.Amount(D("-200.0"), currency="EUR"),
+                        cost=None,
+                        price=None,
                         flag="!",
                         meta=None,
                     ),
