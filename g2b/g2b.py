@@ -5,6 +5,7 @@ import datetime
 import logging
 import os.path
 import re
+import unicodedata
 from collections import defaultdict
 from functools import cached_property
 from pathlib import Path
@@ -13,7 +14,6 @@ from typing import Dict, List
 import click
 import piecash
 import yaml
-import unicodedata
 from beancount.core import data, amount
 from beancount.core.number import D
 from beancount.ops import validation
