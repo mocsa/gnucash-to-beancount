@@ -13,6 +13,7 @@ from typing import Dict, List
 import click
 import piecash
 import yaml
+import unicodedata
 from beancount.core import data, amount
 from beancount.core.number import D
 from beancount.ops import validation
@@ -41,14 +42,13 @@ class GnuCash2Beancount:
     """Application to convert a gnucash sql file to a beancount ledger"""
 
     _DEFAULT_ACCOUNT_RENAME_PATTERNS = [
+        (r"[()\[\]{}]", " "),
+        (r"[^0-9A-Za-z\s:]", "-"),
+        (r"\s$", ""),
         (r"\s", "-"),
-        ("_", "-"),
-        (r"\.$", ""),
-        (r"\.", "-"),
-        ("&", "-"),
-        (r"\(", ""),
-        (r"\)", ""),
-        ("---", "-"),
+        (r"\s$", ""),
+        (r"-$", ""),
+        (r"-+", "-"),
     ]
     """Pattern for character replacements in account names"""
 
@@ -238,22 +238,11 @@ class GnuCash2Beancount:
         Renames an account such that it complies with the required beancount format.
         It also makes sure that the first letter of every component is capitalized.
         """
+        account_name = unicodedata.normalize("NFKD", account_name)
+        account_name = "".join(ch for ch in account_name if not unicodedata.combining(ch))
+
         for pattern, replacement in self._account_rename_patterns:
             account_name = re.sub(pattern, repl=replacement, string=account_name)
-
-        """ Replace any remaining invalid characters with dashes.
-        Beancount only accepts letters (any capitalization), numbers and dashes. """
-        result = []
-        last_replaced_char = ""
-        for c in account_name:
-            if c.isalpha() or c.isdigit() or (c == "-" and last_replaced_char != "-") or c == ":":
-                result.append(c)
-                last_replaced_char = c
-            else:
-                if last_replaced_char != "-":
-                    result.append("-")
-                    last_replaced_char = "-"
-        account_name = "".join(result)
 
         components = account_name.split(":")
         capitalized = [p[:1].upper() + p[1:] if p else "" for p in components]
