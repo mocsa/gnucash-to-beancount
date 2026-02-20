@@ -128,7 +128,51 @@ class TestGnuCash2Beancount:
         config_path = tmp_path / "config.yaml"
         config_path.write_text(yaml.dump(self.test_config))
         g2b = GnuCash2Beancount(Path(), Path(), config_path)
-        assert (r"\s", "-") in g2b._account_rename_patterns
+        for pattern in GnuCash2Beancount._DEFAULT_ACCOUNT_RENAME_PATTERNS:
+            assert pattern in g2b._account_rename_patterns
+
+    @pytest.mark.parametrize(
+        "account_name, expected_name",
+        [
+            ("Assets:Bank:Some Bank (test)", "Assets:Bank:Some-Test-Bank"),
+            ("Liabilities:Credit Card (test)", "Liabilities:Credit-Card-test"),
+            ("Equity:Opening Balances (test)", "Equity:Opening-Balances-test"),
+            ("Assets:Some Wrong 23 ! Charts in name", "Assets:Some-Wrong-23-Charts-in-name"),
+            ("Assets:Account@Symbol", "Assets:Account-Symbol"),
+            ("Expenses:Caf\u00e9&Restaurant", "Expenses:Café-Restaurant"),
+            ("Income:Salary#Bonus", "Income:Salary-Bonus"),
+            ("Liabilities:Loan$Payment", "Liabilities:Loan-Payment"),
+            ("Assets:Bank%Account", "Assets:Bank-Account"),
+            ("Expenses:Travel^Expenses", "Expenses:Travel-Expenses"),
+            ("Assets:Account*With*Stars", "Assets:Account-With-Stars"),
+            ("Income:Dividends+Interest", "Income:Dividends-Interest"),
+            ("Assets:Account=Test", "Assets:Account-Test"),
+            ("Expenses:Shop[Retail]", "Expenses:Shop-Retail"),
+            ("Assets:Account{Curly}", "Assets:Account-Curly"),
+            ("Liabilities:Debt|Payment", "Liabilities:Debt-Payment"),
+            ("Assets:Account\\Backslash", "Assets:Account-Backslash"),
+            ("Expenses:Food;Drinks", "Expenses:Food-Drinks"),
+            ("Income:Rent'Payment", "Income:Rent-Payment"),
+            ('Assets:Account"Quotes"', "Assets:Account-Quotes"),
+            ("Expenses:Items<50", "Expenses:Items-50"),
+            ("Expenses:Items_50", "Expenses:Items-50"),
+            ("Assets:Account>Symbol", "Assets:Account-Symbol"),
+            ("Income:Revenue?Other", "Income:Revenue-Other"),
+            ("Assets:Account/Slash", "Assets:Account-Slash"),
+            ("Expenses:M\u00fcller-Schmidt", "Expenses:Müller-Schmidt"),
+            ("Assets:Some Bank (USD)", "Assets:Some-Bank-USD"),
+            ("Assets:Some Bank (áéíóúöüőű)", "Assets:Some-Bank-áéíóúöüőű"),
+            ("Assets:Some Bank (ÁÉÍÓÚÖÜŐŰ)", "Assets:Some-Bank-ÁÉÍÓÚÖÜŐŰ"),
+        ],
+    )
+    def test_apply_renaming_patterns_return_valid_beancount_names(
+        self, tmp_path, account_name, expected_name
+    ):
+        config_path = tmp_path / "config.yaml"
+        config_path.write_text(yaml.dump(self.test_config))
+        g2b = GnuCash2Beancount(Path(), Path(), config_path)
+        corrected_name = g2b._apply_renaming_patterns(account_name)
+        assert corrected_name == expected_name
 
     def test_write_beancount_file_writes_a_valid_beancount_file(self, tmp_path):
         config_path = tmp_path / "config.yaml"

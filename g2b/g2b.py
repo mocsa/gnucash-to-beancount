@@ -41,14 +41,13 @@ class GnuCash2Beancount:
     """Application to convert a gnucash sql file to a beancount ledger"""
 
     _DEFAULT_ACCOUNT_RENAME_PATTERNS = [
-        (r"\s", "-"),
-        ("_", "-"),
-        (r"\.$", ""),
-        (r"\.", "-"),
-        ("&", "-"),
-        (r"\(", ""),
-        (r"\)", ""),
-        ("---", "-"),
+        (r"[()\[\]{}]", " "),
+        (r"[^\w\s:]", "-"),
+        (r"\s$", ""),
+        (r"[\s_]", "-"),
+        (r"\s$", ""),
+        (r"-$", ""),
+        (r"-+", "-"),
     ]
     """Pattern for character replacements in account names"""
 
