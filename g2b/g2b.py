@@ -5,7 +5,6 @@ import datetime
 import logging
 import os.path
 import re
-import unicodedata
 from collections import defaultdict
 from functools import cached_property
 from pathlib import Path
@@ -43,9 +42,9 @@ class GnuCash2Beancount:
 
     _DEFAULT_ACCOUNT_RENAME_PATTERNS = [
         (r"[()\[\]{}]", " "),
-        (r"[^0-9A-Za-z\s:]", "-"),
+        (r"[^\w\s:]", "-"),
         (r"\s$", ""),
-        (r"\s", "-"),
+        (r"[\s_]", "-"),
         (r"\s$", ""),
         (r"-$", ""),
         (r"-+", "-"),
@@ -238,9 +237,6 @@ class GnuCash2Beancount:
         Renames an account such that it complies with the required beancount format.
         It also makes sure that the first letter of every component is capitalized.
         """
-        account_name = unicodedata.normalize("NFKD", account_name)
-        account_name = "".join(ch for ch in account_name if not unicodedata.combining(ch))
-
         for pattern, replacement in self._account_rename_patterns:
             account_name = re.sub(pattern, repl=replacement, string=account_name)
 
