@@ -181,8 +181,18 @@ class GnuCash2Beancount:
             if self._bean_config.get("flag_postings", True):
                 flag = "!" if not_reconciled_symbol in split.reconcile_state else "*"
             price = self._calculate_price_of_split(split)
+
+            # Add metadata
+            posting_meta = {}
+            if split.memo and split.memo.strip():  # Only add if memo is non-empty
+                posting_meta["memo"] = split.memo.strip()
+            if split.action and split.action.strip():  # Only add if action is non-empty
+                posting_meta["action"] = split.action.strip()
+            # If no metadata was added, set meta to None
+            meta = posting_meta if posting_meta else None
+
             posting = data.Posting(
-                account=account_name, units=units, cost=None, price=price, flag=flag, meta=None
+                account=account_name, units=units, cost=None, price=price, flag=flag, meta=meta
             )
             self._commodities[posting_currency].append(split.transaction.post_date)
             self._commodities[posting_currency] = [min(self._commodities[posting_currency])]
