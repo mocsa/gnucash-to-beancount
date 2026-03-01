@@ -182,14 +182,12 @@ class GnuCash2Beancount:
                 flag = "!" if not_reconciled_symbol in split.reconcile_state else "*"
             price = self._calculate_price_of_split(split)
 
-            # Add metadata
-            posting_meta = {}
-            if split.memo and split.memo.strip():  # Only add if memo is non-empty
-                posting_meta["memo"] = split.memo.strip()
-            if split.action and split.action.strip():  # Only add if action is non-empty
-                posting_meta["action"] = split.action.strip()
-            # If no metadata was added, set meta to None
-            meta = posting_meta if posting_meta else None
+            meta = {}
+            if split.memo and split.memo.strip():
+                meta["memo"] = split.memo.strip()
+            if split.action and split.action.strip():
+                meta["action"] = split.action.strip()
+            meta = meta if meta else None
 
             posting = data.Posting(
                 account=account_name, units=units, cost=None, price=price, flag=flag, meta=meta
@@ -238,7 +236,7 @@ class GnuCash2Beancount:
         for commodity, date in self._commodities.items():
             meta = {"filename": self._filepath, "lineno": -1}
             if self._fava_config.get("commodity-precision", None) is not None:
-                meta.update({"precision": self._fava_config.get("commodity-precision")})
+                meta.update({"precision": str(self._fava_config.get("commodity-precision"))})
             commodities.append(data.Commodity(date=date[0], currency=commodity, meta=meta))
         return commodities
 
